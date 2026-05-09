@@ -151,7 +151,7 @@ function skillController:showOfflineTrainingDialog()
         return
     end
 
-    self.offlineTrainingModal = self:openModal('offlinetraining1524.html')
+    self.offlineTrainingModal = self:openModalHtml('offlinetraining1524.html')
     if self.offlineTrainingModal and self.offlineTrainingModal.ui then
         -- Widget is created from our HTML, so overwriting onDestroy is safe here.
         self.offlineTrainingModal.ui.onDestroy = function()
