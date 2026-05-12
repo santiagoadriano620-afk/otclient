@@ -89,7 +89,7 @@ function TaskBoardController:showSoulseal()
         return
     end
 
-    self.soulsealModal = self:openModalHtml('template/html/modal_soulseal.html')
+    self.soulsealModal = self:openModal('template/html/modal_soulseal.html', { mode = 'html' })
     self:rebuildSoulsealEntries()
     self:syncSoulsealCategorySelect()
 end
