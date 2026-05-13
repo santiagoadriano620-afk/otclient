@@ -277,6 +277,7 @@ controller:registerEvents(g_game, {
         end
         if version >= 1520 then
             g_game.enableFeature(GameLevelPercentU16)
+            g_game.enableFeature(GameTaskboard)
         end
     end
 })

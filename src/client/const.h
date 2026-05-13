@@ -663,6 +663,7 @@ namespace Otc
         GameLevelPercentU16 = 131,
         GameEffectSource = 132,
         GameNpcWindowRedesign = 133,
+        GameTaskboard = 134,
         LastGameFeature
     };
 

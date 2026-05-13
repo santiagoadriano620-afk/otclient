@@ -174,7 +174,7 @@ namespace Proto
         GameServerUnjustifiedStats = 183,
         GameServerPvpSituations = 184,
         GameServerBestiaryRefreshTracker = 185,
-        GameServerTaskHuntingBasicData = 186, // SoulSealsWindow 1521
+        GameServerTaskHuntingBasicData = 186, // SoulSealsWindow 1520
         GameServerTaskHuntingData = 187,
         GameServerBosstiaryCooldownTimer = 189,
         GameServerFloorChangeUp = 190,

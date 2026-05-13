@@ -2761,7 +2761,7 @@ void ProtocolGame::parsePlayerSkills(const InputMessagePtr& msg) const
         const uint16_t defense = msg->getU16();
         const uint16_t armor = msg->getU16();
         uint16_t mantra = 0;
-        if (g_game.getClientVersion() >= 1500) {
+        if (g_game.getFeature(Otc::GameVocationMonk)) {
             mantra = msg->getU16(); // monk voc
         }
         const double mitigation = msg->getDouble();
@@ -4980,7 +4980,7 @@ void ProtocolGame::parseTaskBoardShopData(const InputMessagePtr& msg)
 
 void ProtocolGame::parseTaskHuntingBasicData(const InputMessagePtr& msg)
 {
-    if (g_game.getClientVersion() >= 1521) {
+    if (g_game.getFeature(Otc::GameTaskboard)) {
         auto soulsealEntries = buildTaskBoardSoulsealEntries(readTaskBoardMasteredRaceIds(msg));
         g_lua.callGlobalField("g_game", "onSoulsealsData", soulsealEntries);
     } else {
@@ -5847,7 +5847,7 @@ void ProtocolGame::parseCyclopediaCharacterInfo(const InputMessagePtr& msg)
             const uint8_t preySlotsUnlocked = msg->getU8();
             const uint8_t preyWildcards = msg->getU8();
             bool hasPermanentWeeklyTaskExpansion = false;
-            if (g_game.getClientVersion() >= 1521) {
+            if (g_game.getFeature(Otc::GameTaskboard)) {
                 hasPermanentWeeklyTaskExpansion = static_cast<bool>(msg->getU8());
             }
             const uint8_t instantRewards = msg->getU8();
@@ -6086,7 +6086,7 @@ void ProtocolGame::parseCyclopediaCharacterInfo(const InputMessagePtr& msg)
 
             data.reflectPhysical = msg->getU16();
             data.armor = msg->getU16();
-            if (g_game.getClientVersion() >= 1500) {
+            if (g_game.getFeature(Otc::GameVocationMonk)) {
                 msg->getU16(); // MANTRA
             }
 
@@ -6499,7 +6499,7 @@ void ProtocolGame::parsePreyRerollPrice(const InputMessagePtr& msg)
     if (g_game.getProtocolVersion() >= 1230) {
         wildcard = msg->getU8();
         directly = msg->getU8();
-        if (g_game.getProtocolVersion() < 1520) {
+        if (!g_game.getFeature(Otc::GameTaskboard)) {
             msg->getU32(); // task hunting reroll price
             msg->getU32(); // task hunting reroll price
             msg->getU8(); // task hunting selection list price
@@ -7306,11 +7306,11 @@ void ProtocolGame::parseOpenWheelWindow(const InputMessagePtr& msg)
     }
 
     uint8_t hasMonkQuest = 0;
-    if (g_game.getProtocolVersion() >= 1500 && msg->getUnreadSize() > 0) {
+    if (g_game.getFeature(Otc::GameVocationMonk) && msg->getUnreadSize() > 0) {
         hasMonkQuest = msg->getU8();
         g_logger.debug(fmt::format("[Wheel C++ Parse] hasMonkQuest lido (valor={})", static_cast<int>(hasMonkQuest)));
     }
-    if (g_game.getProtocolVersion() >= 1520) {
+    if (g_game.getFeature(Otc::GameTaskboard)) {
         msg->getU16(); // getExtraPointsFromHuntingTaskShop
     }
     // Gems ativas (equipadas)
