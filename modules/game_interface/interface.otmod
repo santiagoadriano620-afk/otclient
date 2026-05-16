@@ -55,5 +55,6 @@ Module
     - game_forge
     - game_tutorial
     - game_inspect
+    - game_taskboard
   @onLoad: init()
   @onUnload: terminate()

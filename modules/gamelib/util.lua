@@ -11,15 +11,10 @@ function dirtostring(dir)
 end
 
 function comma_value(n)
-    if n == nil then
-        return ""
-    end
-    n = tostring(n)
-    local left, num, right = string.match(n, '^([^%d]*%d)(%d*)(.-)$')
-    if not num then
-        return n
-    end
-    return left .. num:reverse():gsub('(%d%d%d)', '%1,'):reverse() .. right
+    if not n then return "" end
+    local left, num, right = string.match(tostring(n), '^([^%d]*%d)(%d*)(.-)$')
+    if not left then return tostring(n) end
+    return left .. (num:reverse():gsub('(%d%d%d)', '%1,'):reverse()) .. right
 end
 
 function formatTimeBySeconds(totalSeconds)
