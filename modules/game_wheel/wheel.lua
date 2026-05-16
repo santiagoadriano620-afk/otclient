@@ -25,7 +25,6 @@ local function onGameStart()
     end
   else
     scheduleEvent(function()
-      terminate()
       g_modules.getModule("game_wheel"):unload()
     end, 100)
   end
