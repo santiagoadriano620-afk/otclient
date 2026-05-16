@@ -18,9 +18,16 @@ if not SkillwheelStringsLibrary then
 end
 
 local function onGameStart()
-  local ret = WheelOfDestiny.loadWheelPresets()
-  if not ret then
-    print("[wheel] Error loading wheel presets")
+  if g_game.getClientVersion() >= 1310 then 
+    local ret = WheelOfDestiny.loadWheelPresets()
+    if not ret then
+      print("[wheel] Error loading wheel presets")
+    end
+  else
+    scheduleEvent(function()
+      terminate()
+      g_modules.getModule("game_wheel"):unload()
+    end, 100)
   end
 end
 
@@ -112,6 +119,10 @@ function terminate()
   if wheelWindow then
     wheelWindow:destroy()
     wheelWindow = nil
+  end
+  if wheelButton then
+    wheelButton:destroy()
+    wheelButton = nil
   end
 end
 
