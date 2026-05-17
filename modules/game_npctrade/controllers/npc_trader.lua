@@ -473,7 +473,7 @@ function controllerNpcTrader:sellAll(delayed, exceptions)
     end
 
     local queue = {}
-    if self.tradeMode ~= controllerNpcTrader.SELL then
+    if not self.sellItems or #self.sellItems == 0 then
         return
     end
 

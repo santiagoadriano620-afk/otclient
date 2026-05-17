@@ -265,7 +265,7 @@ function getItemPrice(item, single)
     return item.price * amount
 end
 
-function getSellQuantity(item)
+function getSellQuantityLegacy(item)
     if not item or not playerItems[item:getId()] then
         return 0
     end
@@ -282,7 +282,7 @@ function getSellQuantity(item)
     return playerItems[item:getId()] - removeAmount
 end
 
-function canTradeItem(item)
+function canTradeItemLegacy(item)
     if getCurrentTradeType() == BUY then
         return
             (ignoreCapacity:isChecked() or (not ignoreCapacity:isChecked() and playerFreeCapacity >= item.weight)) and
@@ -429,7 +429,7 @@ function onOpenNpcTrade(items)
     end) -- player goods has not been parsed yet
 end
 
-function closeNpcTrade()
+function closeNpcTradeLegacy()
     g_game.closeNpcTrade()
     controllerNpcTrader:legacy_hide()
 end
@@ -535,6 +535,18 @@ function getMaxAmount()
         return 10000
     end
     return 100
+end
+
+function isTradingLegacy()
+    return npcWindow and npcWindow:isVisible() or false
+end
+
+function getSellItemsLegacy()
+    return tradeItems[SELL] or {}
+end
+
+function getBuyItemsLegacy()
+    return tradeItems[BUY] or {}
 end
 
 function sellAllLegacy()

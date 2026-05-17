@@ -1,4 +1,6 @@
 local showHighlightedUnderline = false
+local NPC_DIALOG_HEADER_COLOR = "white"
+
 local function getHighlightedText(text, color, highlightColor)
     color = color or "white"
     highlightColor = highlightColor or "#1f9ffe"
@@ -31,6 +33,53 @@ local function getHighlightedText(text, color, highlightColor)
     return table.concat(parts)
 end
 
+local function createDialogLabel(consoleBuffer, entry)
+    local label = g_ui.createWidget('ConsoleLabel', consoleBuffer)
+    label:setId("consoleLabel" .. consoleBuffer:getChildCount())
+
+    if entry.coloredData then
+        label:setColoredText(entry.coloredData)
+        label.coloredData = entry.coloredData
+    else
+        label:setText(entry.text or "")
+    end
+
+    if entry.color then
+        label:setColor(entry.color)
+    end
+
+    if entry.name then
+        label.name = entry.name
+    end
+
+    if entry.clickable and not label:hasEventListener(EVENT_TEXT_CLICK) then
+        label:setEventListener(EVENT_TEXT_CLICK)
+        connect(label, {
+            onTextClick = function(w, t)
+                controllerNpcTrader:onConsoleTextClicked(w, t)
+            end
+        })
+    end
+
+    return label
+end
+
+local function buildTalkingToEntry(npcName, timestamp)
+    local prefix = timestamp and (timestamp .. " ") or ""
+    return {
+        text = prefix .. "talking to " .. npcName,
+        color = NPC_DIALOG_HEADER_COLOR
+    }
+end
+
+function controllerNpcTrader:ensureDialogHeader(consoleBuffer)
+    if not consoleBuffer or consoleBuffer:getChildCount() > 0 or not self.creatureName or self.creatureName == "" then
+        return
+    end
+
+    createDialogLabel(consoleBuffer, buildTalkingToEntry(self.creatureName, os.date('%H:%M')))
+end
+
 function controllerNpcTrader:onConsoleTextClicked(widget, text)
     if type(widget) == "string" and not text then
         text = widget
@@ -53,43 +102,10 @@ end
 
 function controllerNpcTrader:cloneConsoleMessages()
     local consoleBuffer = self:findWidget("#consoleBuffer")
-    local consoleModule = modules.game_console
 
-    if consoleBuffer and consoleModule then
-        local childCount = consoleBuffer:getChildCount()
-
-        if childCount == 0 then
-            local npcTab = consoleModule.getTab("NPCs")
-            if not npcTab then
-                npcTab = consoleModule.getTab("NPC")
-            end
-            if npcTab and consoleModule.consoleTabBar then
-                local panel = consoleModule.consoleTabBar:getTabPanel(npcTab)
-                if panel then
-                    local tabBuffer = panel:getChildById('consoleBuffer')
-                    if tabBuffer then
-                        for _, child in pairs(tabBuffer:getChildren()) do
-                            local label = g_ui.createWidget('ConsoleLabel', consoleBuffer)
-                            label:setId(child:getId())
-                            if child.coloredData then
-                                label:setColoredText(child.coloredData)
-                            else
-                                label:setText(child:getText())
-                            end
-                            label:setColor(child:getColor())
-                            if not label:hasEventListener(EVENT_TEXT_CLICK) then
-                                label:setEventListener(EVENT_TEXT_CLICK)
-                                connect(label, {
-                                    onTextClick = function(w, t)
-                                        controllerNpcTrader:onConsoleTextClicked(w, t)
-                                    end
-                                })
-                            end
-                        end
-                    end
-                end
-            end
-        end
+    if consoleBuffer then
+        consoleBuffer:destroyChildren()
+        self:ensureDialogHeader(consoleBuffer)
     end
 end
 
@@ -181,9 +197,8 @@ function onNpcTalk(name, level, mode, text, channelId, creaturePos)
     if mode == MessageModes.NpcTo or mode == MessageModes.NpcFrom or mode == MessageModes.NpcFromStartBlock then
         local consoleBuffer = controllerNpcTrader:findWidget("#consoleBuffer")
         if consoleBuffer then
+            controllerNpcTrader:ensureDialogHeader(consoleBuffer)
             local consoleModule = modules.game_console
-            local label = g_ui.createWidget('ConsoleLabel', consoleBuffer)
-            label:setId("consoleLabel" .. consoleBuffer:getChildCount())
             local SpeakTypes = consoleModule and consoleModule.SpeakTypes or {}
             local color = '#5FF7F7'
             if SpeakTypes[mode] and SpeakTypes[mode].color then
@@ -195,21 +210,16 @@ function onNpcTalk(name, level, mode, text, channelId, creaturePos)
             elseif mode == MessageModes.NpcTo then
                 fullText = name .. ": " .. text
             end
+            local entry = {
+                text = fullText,
+                color = color,
+                name = mode == MessageModes.NpcTo and g_game.getCharacterName() or name,
+                clickable = true
+            }
             if getHighlightedText then
-                local highlightData = getHighlightedText(fullText, color, "#1f9ffe")
-                label:setColoredText(highlightData)
-            else
-                label:setText(fullText)
+                entry.coloredData = getHighlightedText(fullText, color, "#1f9ffe")
             end
-            label:setColor(color)
-            if not label:hasEventListener(EVENT_TEXT_CLICK) then
-                label:setEventListener(EVENT_TEXT_CLICK)
-                connect(label, {
-                    onTextClick = function(w, t)
-                        controllerNpcTrader:onConsoleTextClicked(w, t)
-                    end
-                })
-            end
+            createDialogLabel(consoleBuffer, entry)
         end
     end
 end
