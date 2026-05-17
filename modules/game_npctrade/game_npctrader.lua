@@ -5,6 +5,7 @@ controllerNpcTrader.outfit = nil
 controllerNpcTrader.buttons = {}
 controllerNpcTrader.isTradeOpen = false
 controllerNpcTrader.legacyMode = false
+controllerNpcTrader.npcTalkConnected = false
 
 function controllerNpcTrader:isLegacyMode()
     return self.legacyMode
@@ -51,9 +52,30 @@ function controllerNpcTrader:onGameStart()
             else
                 self:onCloseNpcTrade()
             end
-        end,
+        end
+    })
+end
+
+function controllerNpcTrader:connectNpcTalkEvent()
+    if self:isLegacyMode() or self.npcTalkConnected then
+        return
+    end
+
+    connect(g_game, {
         onTalk = onNpcTalk
     })
+    self.npcTalkConnected = true
+end
+
+function controllerNpcTrader:disconnectNpcTalkEvent()
+    if not self.npcTalkConnected then
+        return
+    end
+
+    disconnect(g_game, {
+        onTalk = onNpcTalk
+    })
+    self.npcTalkConnected = false
 end
 
 function controllerNpcTrader:onTerminate()
@@ -76,6 +98,7 @@ function controllerNpcTrader:onCloseNpcTrade()
     if self:isLegacyMode() then
         self:legacy_hide()
     else
+        self:disconnectNpcTalkEvent()
         if controllerNpcTrader.ui and controllerNpcTrader.ui:isVisible() then
             controllerNpcTrader:unloadHtml()
         end

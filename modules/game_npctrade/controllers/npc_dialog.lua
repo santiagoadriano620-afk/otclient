@@ -136,6 +136,7 @@ function controllerNpcTrader:initNpcWindow(creature, buttons)
     if self:isLegacyMode() then
         return
     end
+    self:connectNpcTalkEvent()
     self.widthConsole = self.DEFAULT_CONSOLE_WIDTH
     self.isTradeOpen = false
     if creature then
