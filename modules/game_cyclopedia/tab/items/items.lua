@@ -869,7 +869,7 @@ function Cyclopedia.internalCreateItem(data)
         end
 
         Cyclopedia.Items.currentItemId = itemId
-        g_game.inspectionObject(3, itemId)
+        g_game.inspectionObject(InspectObjectTypes.INSPECT_CYCLOPEDIA, itemId)
 
         if not lootValue:isVisible() then
             lootValue:setVisible(true)

@@ -213,7 +213,7 @@ function controllerNpcTrader:onTradeItemMouseRelease(item, widget, mousePos, mou
             g_game.inspectNpcTrade(item.ptr)
         end)
         menu:addOption("Inspect", function()
-            print("TODO create module InspectionObject in html")
+            g_game.inspectionObject(InspectObjectTypes.INSPECT_CYCLOPEDIA, item.ptr:getId())
         end)
         menu:display(mousePos)
         return true
